@@ -5,6 +5,8 @@
   var DATA_PATH = 'burdens.csv';
   var INITIAL_STATE = '1';
   var INITIAL_YEAR = '2012';
+  var formatPercents = d3.format(',.1%');
+  var formatDollars = d3.format("$,.2f");
 
   $(function() {
     queue()
@@ -20,6 +22,12 @@
     initialize: function(data) {
       this.data = data;
       this.drawTableState(this.filterByState(INITIAL_STATE));
+
+      $('#state').change(function(e) {
+        var state = $(this).val();
+        console.log(state);
+        burdens.drawTableState(burdens.filterByState(state));
+      });
     },
 
     filterByState: function(state) {
@@ -44,12 +52,12 @@
       var states = d3.select('#burdens').selectAll('tr');
 
       states.data(data).enter().append('tr').html(function(d) {
-        return '<td>' + d.year + '</td>'
-        + '<td>' + d.burdenRate + '</td>'
-        + '<td>' + d.incomePerCapita + '</td>'
-        + '<td>' + d.taxPaidToOwnState + '</td>'
-        + '<td>' + d.taxPaidToOtherState + '</td>'
-        + '<td>' + (+d.taxPaidToOwnState + +d.taxPaidToOtherState) + '</td>';
+        return '<td class="number">' + d.year + '</td>'
+        + '<td class="number">' + formatPercents(d.burdenRate) + '</td>'
+        + '<td class="number">' + formatDollars(d.incomePerCapita) + '</td>'
+        + '<td class="number">' + formatDollars(d.taxPaidToOwnState) + '</td>'
+        + '<td class="number">' + formatDollars(d.taxPaidToOtherState) + '</td>'
+        + '<td class="number">' + formatDollars(+d.taxPaidToOwnState + +d.taxPaidToOtherState) + '</td>';
       });
     },
   };
