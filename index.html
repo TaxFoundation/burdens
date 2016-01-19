@@ -6,7 +6,6 @@
   </head>
   <body>
     <select id="state">
-      <option value="0">United States</option>
       <option value="1">Alabama</option>
       <option value="2">Alaska</option>
       <option value="4">Arizona</option>
@@ -63,10 +62,20 @@
     <label for="nominal">Nominal Dollars</label>
     <input type="radio" name="dollars" id="nominal" value="nominal">
 
-    <table id="burdens">
-
+    <table>
+      <thead>
+        <td>Year</td>
+        <td>Burden Rate</td>
+        <td>Income per Capita</td>
+        <td>Taxes Paid to Own State Per Capita</td>
+        <td>Taxes Paid to Other States Per Capita</td>
+        <td>Total Taxes Paid Per Capita</td>
+      </thead>
+      <tbody id="burdens"></tbody>
     </table>
+    <script src="jquery-1.11.3.min.js" charset="utf-8"></script>
     <script src="d3.v3.min.js" charset="utf-8"></script>
+    <script src="queue.v1.min.js" charset="utf-8"></script>
     <script src="burdens.js" charset="utf-8"></script>
   </body>
 </html>
