@@ -63,22 +63,22 @@
 
       $('#state').change(function(e) {
         var state = $(this).val();
-        burdens.drawTableState(burdens.filterByState(state));
+        burdens.drawTable(burdens.filterByState(state));
       });
 
       $('#years').change(function(e) {
         var year = $(this).val();
-        burdens.drawTableYear(burdens.filterByYear(year));
+        burdens.drawTable(burdens.filterByYear(year));
       });
 
       $('input[name=dollars]').change(function() {
         var view = $('input[name=view-type]:checked').val();
         if (view === 'year') {
           var year = $('#years').val();
-          burdens.drawTableYear(burdens.filterByYear(year));
+          burdens.drawTable(burdens.filterByYear(year));
         } else {
           var state = $('#state').val();
-          burdens.drawTableState(burdens.filterByState(state));
+          burdens.drawTable(burdens.filterByState(state));
         }
       });
 
@@ -93,12 +93,12 @@
         $('#state').css('display', 'none');
         $('#years').css('display', 'block');
         var year = $('#years').val();
-        burdens.drawTableYear(burdens.filterByYear(year));
+        burdens.drawTable(burdens.filterByYear(year));
       } else {
         $('#years').css('display', 'none');
         $('#state').css('display', 'block');
         var state = $('#state').val();
-        burdens.drawTableYear(burdens.filterByState(state));
+        burdens.drawTable(burdens.filterByState(state));
       }
     },
 
@@ -122,41 +122,37 @@
 
     adjustDollars: function(value, year) {
       if ($('input[name="dollars"]:checked').val() === 'real') {
-        return value * ADJUSTMENTS[year];
+        return formatDollars(value * ADJUSTMENTS[year]);
       } else {
-        return value;
+        return formatDollars(value);
       }
     },
 
-    drawTableState: function(data) {
+    drawTable: function(data) {
       d3.select('#burdens').selectAll('tr').remove();
 
       var rows = d3.select('#burdens').selectAll('tr');
+      var view = $('input[name=view-type]:checked').val();
+      var firstColumn = '';
 
       rows.data(data).enter().append('tr').html(function(d) {
-        return '<td class="number">' + d.year + '</td>'
+        var firstColumn = '';
+
+        if (view === 'state') {
+          firstColumn = '<td class="number">' + d.year + '</td>';
+        } else {
+          firstColumn = '<td>' + d.state + '</td>';
+        }
+
+        return firstColumn
         + '<td class="number">' + formatPercents(d.burdenRate) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.incomePerCapita, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOwnState, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOtherState, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(+d.taxPaidToOwnState + +d.taxPaidToOtherState, +d.year)) + '</td>';
+        + '<td class="number">' + burdens.adjustDollars(d.incomePerCapita, +d.year) + '</td>'
+        + '<td class="number">' + burdens.adjustDollars(d.taxPaidToOwnState, +d.year) + '</td>'
+        + '<td class="number">' + burdens.adjustDollars(d.taxPaidToOtherState, +d.year) + '</td>'
+        + '<td class="number">' + burdens.adjustDollars(+d.taxPaidToOwnState + +d.taxPaidToOtherState, +d.year) + '</td>';
       });
     },
 
-    drawTableYear: function(data) {
-      d3.select('#burdens').selectAll('tr').remove();
-
-      var rows = d3.select('#burdens').selectAll('tr');
-
-      rows.data(data).enter().append('tr').html(function(d) {
-        return '<td>' + d.state + '</td>'
-        + '<td class="number">' + formatPercents(d.burdenRate) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.incomePerCapita, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOwnState, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOtherState, +d.year)) + '</td>'
-        + '<td class="number">' + formatDollars(burdens.adjustDollars(+d.taxPaidToOwnState + +d.taxPaidToOtherState, +d.year)) + '</td>';
-      });
-    },
   };
 
 })();
