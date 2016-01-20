@@ -46,58 +46,57 @@
     2012: 1,
   };
 
-  $(function() {
-    queue()
-      .defer(d3.csv, DATA_PATH)
-      .await(function(error, data) {
-        if (error) { console.log(error); }
+  queue()
+    .defer(d3.csv, DATA_PATH)
+    .await(function(error, data) {
+      if (error) { console.log(error); }
 
-        burdens.initialize(data);
-      });
-  });
+      burdens.initialize(data);
+    });
 
   burdens = {
     initialize: function(data) {
       this.data = data;
       this.viewControl();
 
-      $('#state').change(function(e) {
-        var state = $(this).val();
+      d3.select('#state').on('change', function(e) {
+        var state = d3.select(this).property('value');
         burdens.drawTable(burdens.filterByState(state));
       });
 
-      $('#years').change(function(e) {
-        var year = $(this).val();
+      d3.select('#years').on('change', function(e) {
+        var year = d3.select(this).property('value');
         burdens.drawTable(burdens.filterByYear(year));
       });
 
-      $('input[name=dollars]').change(function() {
-        var view = $('input[name=view-type]:checked').val();
+      d3.selectAll('input[name=dollars]').on('change', function() {
+        var view = d3.select('input[name=view-type]:checked').property('value');
         if (view === 'year') {
-          var year = $('#years').val();
+          var year = d3.select('#years').property('value');
           burdens.drawTable(burdens.filterByYear(year));
         } else {
-          var state = $('#state').val();
+          var state = d3.select('#state').property('value');
           burdens.drawTable(burdens.filterByState(state));
         }
       });
 
-      $('input[name=view-type]').change(function() {
+      d3.selectAll('input[name=view-type]').on('change', function() {
         burdens.viewControl();
       });
     },
 
     viewControl: function() {
-      var view = $('input[name=view-type]:checked').val();
+      var view = d3.select('input[name="view-type"]:checked').property('value');
+
       if (view === 'year') {
-        $('#state').css('display', 'none');
-        $('#years').css('display', 'block');
-        var year = $('#years').val();
+        d3.select('#state').style({ display: 'none' });
+        d3.select('#years').style({ display: 'block' });
+        var year = d3.select('#years').property('value');
         burdens.drawTable(burdens.filterByYear(year));
       } else {
-        $('#years').css('display', 'none');
-        $('#state').css('display', 'block');
-        var state = $('#state').val();
+        d3.select('#years').style({ display: 'none' });
+        d3.select('#state').style({ display: 'block' });
+        var state = d3.select('#state').property('value');
         burdens.drawTable(burdens.filterByState(state));
       }
     },
@@ -121,7 +120,7 @@
     },
 
     adjustDollars: function(value, year) {
-      if ($('input[name="dollars"]:checked').val() === 'real') {
+      if (d3.select('input[name="dollars"]:checked').property('value') === 'real') {
         return formatDollars(value * ADJUSTMENTS[year]);
       } else {
         return formatDollars(value);
@@ -132,7 +131,7 @@
       d3.select('#burdens').selectAll('tr').remove();
 
       var rows = d3.select('#burdens').selectAll('tr');
-      var view = $('input[name=view-type]:checked').val();
+      var view = d3.select('input[name="view-type"]:checked').property('value');
       var firstColumn = '';
 
       rows.data(data).enter().append('tr').html(function(d) {
