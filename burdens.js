@@ -69,7 +69,7 @@
       $('input[name=dollars]').change(function() {
         var state = $('#state').val();
         burdens.drawTableState(burdens.filterByState(state));
-      })
+      });
     },
 
     filterByState: function(state) {
