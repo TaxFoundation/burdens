@@ -11,9 +11,9 @@
   </head>
   <body>
     <label for="year-view">View All States by Year</label>
-    <input type="radio" name="view-type" id="year-view">
-    <label for="year-view">View All Years for One State</label>
-    <input type="radio" name="view-type" id="state-view">
+    <input type="radio" name="view-type" id="year-view" value="year" checked>
+    <label for="state-view">View All Years for One State</label>
+    <input type="radio" name="view-type" id="state-view" value="state">
     <select id="state">
       <option value="1" selected="selected">Alabama</option>
       <option value="2">Alaska</option>
@@ -67,7 +67,7 @@
       <option value="56">Wyoming</option>
     </select>
     <select id="years">
-      <option value="2012">2012</option>
+      <option value="2012" selected="selected">2012</option>
       <option value="2011">2011</option>
       <option value="2010">2010</option>
       <option value="2009">2009</option>

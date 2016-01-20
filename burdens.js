@@ -59,17 +59,47 @@
   burdens = {
     initialize: function(data) {
       this.data = data;
-      this.drawTableState(this.filterByState(INITIAL_STATE));
+      this.viewControl();
 
       $('#state').change(function(e) {
         var state = $(this).val();
         burdens.drawTableState(burdens.filterByState(state));
       });
 
-      $('input[name=dollars]').change(function() {
-        var state = $('#state').val();
-        burdens.drawTableState(burdens.filterByState(state));
+      $('#years').change(function(e) {
+        var year = $(this).val();
+        burdens.drawTableYear(burdens.filterByYear(year));
       });
+
+      $('input[name=dollars]').change(function() {
+        var view = $('input[name=view-type]:checked').val();
+        if (view === 'year') {
+          var year = $('#years').val();
+          burdens.drawTableYear(burdens.filterByYear(year));
+        } else {
+          var state = $('#state').val();
+          burdens.drawTableState(burdens.filterByState(state));
+        }
+      });
+
+      $('input[name=view-type]').change(function() {
+        burdens.viewControl();
+      });
+    },
+
+    viewControl: function() {
+      var view = $('input[name=view-type]:checked').val();
+      if (view === 'year') {
+        $('#state').css('display', 'none');
+        $('#years').css('display', 'block');
+        var year = $('#years').val();
+        burdens.drawTableYear(burdens.filterByYear(year));
+      } else {
+        $('#years').css('display', 'none');
+        $('#state').css('display', 'block');
+        var state = $('#state').val();
+        burdens.drawTableYear(burdens.filterByState(state));
+      }
     },
 
     filterByState: function(state) {
@@ -86,6 +116,8 @@
       var yearData = burdens.data.filter(function(yearData) {
         return yearData.year == year;
       });
+
+      return yearData;
     },
 
     adjustDollars: function(value, year) {
@@ -99,10 +131,25 @@
     drawTableState: function(data) {
       d3.select('#burdens').selectAll('tr').remove();
 
-      var states = d3.select('#burdens').selectAll('tr');
+      var rows = d3.select('#burdens').selectAll('tr');
 
-      states.data(data).enter().append('tr').html(function(d) {
+      rows.data(data).enter().append('tr').html(function(d) {
         return '<td class="number">' + d.year + '</td>'
+        + '<td class="number">' + formatPercents(d.burdenRate) + '</td>'
+        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.incomePerCapita, +d.year)) + '</td>'
+        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOwnState, +d.year)) + '</td>'
+        + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOtherState, +d.year)) + '</td>'
+        + '<td class="number">' + formatDollars(burdens.adjustDollars(+d.taxPaidToOwnState + +d.taxPaidToOtherState, +d.year)) + '</td>';
+      });
+    },
+
+    drawTableYear: function(data) {
+      d3.select('#burdens').selectAll('tr').remove();
+
+      var rows = d3.select('#burdens').selectAll('tr');
+
+      rows.data(data).enter().append('tr').html(function(d) {
+        return '<td>' + d.state + '</td>'
         + '<td class="number">' + formatPercents(d.burdenRate) + '</td>'
         + '<td class="number">' + formatDollars(burdens.adjustDollars(d.incomePerCapita, +d.year)) + '</td>'
         + '<td class="number">' + formatDollars(burdens.adjustDollars(d.taxPaidToOwnState, +d.year)) + '</td>'
